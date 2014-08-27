@@ -1,0 +1,24 @@
+{
+  "name": "point-free",
+  "version": "0.0.1",
+  "description": "Point free async combinators",
+  "keywords": [
+    "point-free", "async", "higher-order", "combinator", "flow"
+  ],
+  "author": "Alexander Schepanovski",
+  "homepage": "http://github.com/Suor/point-free",
+  "license": "BSD",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Suor/point-free"
+  },
+  "bugs": {
+    "url": "https://github.com/Suor/point-free/issues"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+  }
+}
