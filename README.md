@@ -43,4 +43,6 @@ function copyFile(from, to, callback) {
 
 ### serial(funcs...)
 
+### parallel(funcs...)
+
 ### retry([attempts = 5], func)

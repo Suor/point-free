@@ -45,6 +45,32 @@ exports.serial = function () {
     }
 }
 
+exports.parallel = function () {
+    var tasks = [].slice.call(arguments);
+    var results = [];
+    var done = 0;
+    var callback;
+
+    function handler(i) {
+        return function (err) {
+            if (err) return callback(err);
+            done++;
+            // TODO: handle no results / more than 1 result
+            results[i] = arguments[1];
+            if (done === tasks.length) return callback(null, results);
+        }
+    }
+
+    return function () {
+        var args = [].slice.call(arguments);
+        callback = args.pop();
+
+        for (var i = 0; i < tasks.left; i++) {
+            tasks[i].apply(null, args.concat([handler(i)]))
+        }
+    }
+}
+
 exports.retry = function (attempts, func) {
     var left = func ? attempts : 5;
     func = func || attempts;
