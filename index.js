@@ -65,7 +65,7 @@ exports.parallel = function () {
         var args = [].slice.call(arguments);
         callback = args.pop();
 
-        for (var i = 0; i < tasks.left; i++) {
+        for (var i = 0; i < tasks.length; i++) {
             tasks[i].apply(null, args.concat([handler(i)]))
         }
     }
