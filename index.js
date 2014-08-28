@@ -21,7 +21,7 @@ exports.waterfall = function () {
     }
 }
 
-exports.series = function () {
+exports.serial = function () {
     var tasks = [].slice.call(arguments);
     var results = [];
     var index = -1;

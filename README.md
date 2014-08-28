@@ -41,6 +41,6 @@ function copyFile(from, to, callback) {
 
 ### waterfall(funcs...)
 
-### series(funcs...)
+### serial(funcs...)
 
 ### retry([attempts = 5], func)
