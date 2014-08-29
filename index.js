@@ -1,3 +1,15 @@
+// Ideads:
+//  - support [arrays] and {objects} in serial() and parallel()
+//  - support <flow-func>(tasks, callback) syntax, aka async.compatible
+//  - select return value from serial(), parallel(), auto() like
+//      serial(...).select(1)    // second
+//      parallel(...).select(-1) // last
+//      auto(...).select('job')  // named
+//      // custom synchronous extractor
+//      <flow-func>(...).select(function (res) { return res.... })
+//  - stop passing args in serial() and parallel(), thats confusing.
+//    Encourage enclosing instead.
+
 exports.waterfall = function () {
     // TODO: check tasks types?
     var tasks = [].slice.call(arguments);
