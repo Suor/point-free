@@ -7,8 +7,6 @@
 //      auto(...).select('job')  // named
 //      // custom synchronous extractor
 //      <flow-func>(...).select(function (res) { return res.... })
-//  - stop passing args in serial() and parallel(), thats confusing.
-//    Encourage enclosing instead.
 
 exports.waterfall = function () {
     // TODO: check tasks types?
@@ -35,9 +33,9 @@ exports.waterfall = function () {
 
 exports.serial = function () {
     var tasks = [].slice.call(arguments);
+    var callback;
     var results = [];
     var index = -1;
-    var args, callback;
 
     function handler(err) {
         if (err) return callback(err);
@@ -46,14 +44,12 @@ exports.serial = function () {
         if (index) results.push(arguments[1]);
         if (index >= tasks.length) return callback(null, results);
 
-        tasks[index].apply(null, args.concat([handler]))
+        tasks[index](handler);
     }
 
-    return function () {
-        args = [].slice.call(arguments);
-        callback = args.pop();
-
-        handler.apply(null, [null].concat(args));
+    return function (_callback) {
+        callback = _callback;
+        handler(null);
     }
 }
 
@@ -73,12 +69,11 @@ exports.parallel = function () {
         }
     }
 
-    return function () {
-        var args = [].slice.call(arguments);
-        callback = args.pop();
+    return function (_callback) {
+        callback = _callback;
 
         for (var i = 0; i < tasks.length; i++) {
-            tasks[i].apply(null, args.concat([handler(i)]))
+            tasks[i](handler(i))
         }
     }
 }

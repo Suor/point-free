@@ -43,16 +43,6 @@ describe('serial', function () {
         })
     })
 
-    it('should pass arguments', function (done) {
-        pf.serial(
-            function (x, callback) { callback(null, x * 2) },
-            function (x, callback) { callback(null, x / 2); }
-        )(2, function (err, res) {
-            assert.deepEqual(res, [4, 1])
-            done()
-        })
-    })
-
     it('should pass error', function (done) {
         pf.serial(
             function (callback) { callback('an error') },
@@ -79,16 +69,6 @@ describe('parallel', function () {
         )(function (err, res) {
             assert.deepEqual(calls, [2, 1])
             assert.deepEqual(res, [1, 2])
-            done()
-        })
-    })
-
-    it('should pass arguments', function (done) {
-        pf.parallel(
-            function (x, callback) { callback(null, x * 2) },
-            function (x, callback) { callback(null, x / 2); }
-        )(2, function (err, res) {
-            assert.deepEqual(res, [4, 1])
             done()
         })
     })
