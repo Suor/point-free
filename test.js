@@ -120,6 +120,46 @@ describe('manual', function () {
 })
 
 
+describe('auto', function () {
+    it('should waterfall', function (done) {
+        pf.auto({
+            start: function (callback) { callback(null, 4) },
+            divmul: ['start', function (x, callback) { callback(null, x / 2, x * 2) }],
+            sum: ['divmul', function (y, z, callback) { callback(null, y + z); }]
+        })(function (err, res) {
+            assert.equal(res, 10)
+            done()
+        })
+    })
+
+    it('should pass error', function (done) {
+        pf.manual({
+            auto: function (callback) { callback('an error') },
+            other: function (callback) { callback(null); }
+        })(function (err) {
+            assert.equal(err, 'an error')
+            done()
+        })
+    })
+
+    it('should try parallel', function (done) {
+        var calls = [];
+
+        pf.auto({
+            1: function (callback) { setTimeout(function () {calls.push(1); callback(null)}, 20) },
+            2: function (callback) { setTimeout(function () {calls.push(2); callback(null)}, 10) },
+            3: ['1', '2', function (_x, _y, callback) {
+                calls.push(3)
+                callback(null)
+            }]
+        })(function (err) {
+            assert.deepEqual(calls, [2, 1, 3])
+            done()
+        })
+    })
+})
+
+
 describe('retry', function () {
     function failing(n, func) {
         var i = 0;
