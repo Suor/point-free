@@ -228,6 +228,40 @@ describe('retry', function () {
             })
         })
     })
+
+
+describe('limit', function () {
+    it('should limit', function (done) {
+        var running = 0, max = 0;
+        var limited = pf.limit(2, function (callback) {
+            running++;
+            if (running > max) max = running;
+            setTimeout(function () { running--; callback(null) }, 10)
+        })
+
+        pf.parallel(limited, limited, limited)(function (err, results) {
+            assert.equal(max, 2)
+            done()
+        })
+    })
+
+    it('should pass error', function (done) {
+        pf.limit(2, function (callback) { callback('an error') })(function (err) {
+            assert.equal(err, "an error")
+            done()
+        })
+    })
+
+    it('should preserve interface', function (done) {
+        function add(x, y, callback) {
+            callback(null, x + y);
+        }
+
+        pf.limit(2, add)(1, 2, function (err, res) {
+            assert.equal(res, 3)
+            done()
+        })
+    })
 })
 
 

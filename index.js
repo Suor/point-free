@@ -158,3 +158,28 @@ exports.retry = function (options, func) {
         func.apply(null, args)
     }
 }
+
+exports.limit = function (concurrency, func) {
+    var running = 0;
+    var queue = [];
+
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+        args.push(done);
+
+        function done() {
+            running--;
+            callback.apply(null, arguments);
+            if (queue.length)
+                func.apply(null, queue.shift());
+        }
+
+        if (running < concurrency) {
+            running++;
+            func.apply(null, args);
+        } else {
+            queue.push(args);
+        }
+    }
+}
