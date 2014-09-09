@@ -28,17 +28,23 @@ describe('waterfall', function () {
 describe('serial', function () {
     it('should be serial', function (done) {
         var calls = [];
-        var call = function (value, callback) {
-            calls.push(value);
-            callback(null, value);
-        }
 
         pf.serial(
-            function (callback) { setTimeout(call.bind(null, 1, callback), 20) },
-            function (callback) { setTimeout(call.bind(null, 2, callback), 10) }
-        )(function (err, res) {
+            function (callback) { setTimeout(function () {calls.push(1); callback(null)}, 20) },
+            function (callback) { setTimeout(function () {calls.push(2); callback(null)}, 10) }
+        )(function (err) {
             assert.deepEqual(calls, [1, 2])
-            assert.deepEqual(res, [1, 2])
+            done()
+        })
+    })
+
+    it('should pass results', function (done) {
+        pf.serial(
+            function (callback) { callback(null, 1, 2) },
+            function (callback) { callback(null, 3) },
+            function (callback) { callback(null) }
+        )(function (err, res) {
+            assert.deepEqual(res, [[1, 2], 3, undefined])
             done()
         })
     })
@@ -58,17 +64,23 @@ describe('serial', function () {
 describe('parallel', function () {
     it('should be parallel', function (done) {
         var calls = [];
-        var call = function (value, callback) {
-            calls.push(value);
-            callback(null, value);
-        }
 
-        pf.parallel(
-            function (callback) { setTimeout(call.bind(null, 1, callback), 20) },
-            function (callback) { setTimeout(call.bind(null, 2, callback), 10) }
+        pf.serial(
+            function (callback) { setTimeout(function () {calls.push(1); callback(null)}, 20) },
+            function (callback) { setTimeout(function () {calls.push(2); callback(null)}, 10) }
+        )(function (err) {
+            assert.deepEqual(calls, [1, 2])
+            done()
+        })
+    })
+
+    it('should pass results', function (done) {
+        pf.serial(
+            function (callback) { callback(null, 1, 2) },
+            function (callback) { callback(null, 3) },
+            function (callback) { callback(null) }
         )(function (err, res) {
-            assert.deepEqual(calls, [2, 1])
-            assert.deepEqual(res, [1, 2])
+            assert.deepEqual(res, [[1, 2], 3, undefined])
             done()
         })
     })

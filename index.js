@@ -40,8 +40,10 @@ exports.serial = function () {
     function handler(err) {
         if (err) return callback(err);
         index++;
-        // TODO: handle no results / more than 1 result
-        if (index) results.push(arguments[1]);
+        if (index) {
+            if (arguments.length <= 2) results.push(arguments[1])
+            else results.push([].slice.call(arguments, 1))
+        }
         if (index >= tasks.length) return callback(null, results);
 
         tasks[index](handler);
@@ -63,8 +65,8 @@ exports.parallel = function () {
         return function (err) {
             if (err) return callback(err);
             done++;
-            // TODO: handle no results / more than 1 result
-            results[i] = arguments[1];
+            if (arguments.length <= 2) results[i] = arguments[1]
+            else results[i] = [].slice.call(arguments, 1)
             if (done === tasks.length) return callback(null, results);
         }
     }
