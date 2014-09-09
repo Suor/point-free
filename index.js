@@ -84,14 +84,26 @@ exports.parallel = function () {
 }
 
 exports.retry = function (options, func) {
+    // handle defaults
     if (typeof options == 'function') {
         func = options
-        options = {attempts: 5}
+        options = {}
     }
     else if (typeof options == 'number') {
         options = {attempts: options}
     }
-    var left = options.attempts;
+    options.attempts = options.attempts || 5;
+
+    // handle timeout
+    var timeout = options.timeout;
+    var factor = options.factor || 1
+    if (typeof options.timeout == 'number') {
+        options.timeout = function (attempt) {
+            return timeout * Math.pow(factor, attempt - 1)
+        }
+    }
+
+    var attempt = 0;
 
     return function () {
         var args = [].slice.call(arguments);
@@ -99,11 +111,16 @@ exports.retry = function (options, func) {
         args.push(retry);
 
         function retry(err) {
-            left--;
-            if (err && left)
-                return func.apply(null, args)
-            return callback.apply(null, arguments);
-        };
+            attempt++
+            if (err && attempt < options.attempts) {
+                if (timeout)
+                    setTimeout(function () { func.apply(null, args) }, options.timeout(attempt))
+                else
+                    func.apply(null, args)
+            }
+            else
+                callback.apply(null, arguments)
+        }
         func.apply(null, args)
     }
 }

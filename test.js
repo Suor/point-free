@@ -137,4 +137,46 @@ describe('retry', function () {
             done()
         })
     })
+
+    describe('timeout', function () {
+        it('should take constant', function (done) {
+            _time(pf.retry({timeout: 10}, failing(2, noop)))(function (delay) {
+                assert(delay >= 20)
+                done()
+            })
+        })
+
+        it('should respect factor', function (done) {
+            _time(pf.retry({timeout: 10, factor: 2}, failing(2, noop)))(function (delay) {
+                assert(delay >= 30)
+                done()
+            })
+        })
+
+        it('should take function', function (done) {
+            function timeout(attempt) {
+                return 10 * Math.pow(2, attempt - 1)
+            }
+
+            var start = (new Date()).getTime();
+            _time(pf.retry({timeout: timeout}, failing(2, noop)))(function (delay) {
+                assert(delay >= 30)
+                done()
+            })
+        })
+    })
 })
+
+
+function _time(func) {
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+
+        var start = (new Date()).getTime();
+        func.apply(null, args.concat([function () {
+            var end = (new Date()).getTime();
+            callback(end - start);
+        }]))
+    }
+}
