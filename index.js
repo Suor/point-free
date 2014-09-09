@@ -7,6 +7,9 @@
 //      auto(...).select('job')  // named
 //      // custom synchronous extractor
 //      <flow-func>(...).select(function (res) { return res.... })
+//  - error/handle to handle errors from serial(), parallel(), auto() like
+//      serial(...).error(function (err, callback) {....})
+
 
 exports.waterfall = function () {
     // TODO: check tasks types?
