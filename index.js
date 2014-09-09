@@ -9,7 +9,15 @@
 //      <flow-func>(...).select(function (res) { return res.... })
 //  - error/handle to handle errors from serial(), parallel(), auto() like
 //      serial(...).error(function (err, callback) {....})
-
+//
+//  Use continuations everywhere? Not possible?
+//  This thing is really works best with returning continuation funcs, not node style.
+//  But everything is node style :(
+//  Another nail is that writing small funcs really suck in return continuation style.
+//
+//  - Move to async calling style and rename?
+//  - Support both styles?
+//  - Move to return continuation style? And write a dead library?
 
 exports.waterfall = function () {
     // TODO: check tasks types?
