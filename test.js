@@ -245,6 +245,22 @@ describe('limit', function () {
         })
     })
 
+    it('should limit by', function (done) {
+        var running = 0, max = 0;
+        var limited = pf.limit({limit: 2, by: function (x) { return x }}, function (x, callback) {
+            running++;
+            if (running > max) max = running;
+            setTimeout(function () { running--; callback(null) }, 10)
+        })
+        var limited1 = limited.bind(null, 1);
+        var limited2 = limited.bind(null, 2);
+
+        pf.parallel(limited1, limited1, limited1, limited2)(function (err, results) {
+            assert.equal(max, 3)
+            done()
+        })
+    })
+
     it('should pass error', function (done) {
         pf.limit(2, function (callback) { callback('an error') })(function (err) {
             assert.equal(err, "an error")

@@ -137,6 +137,7 @@ exports.retry = function (options, func) {
         }
     }
 
+    // State
     var attempt = 0;
 
     return function () {
@@ -159,27 +160,34 @@ exports.retry = function (options, func) {
     }
 }
 
-exports.limit = function (concurrency, func) {
-    var running = 0;
-    var queue = [];
+exports.limit = function (options, func) {
+    // handle defaults
+    if (typeof options == 'number') {
+        options = {limit: options}
+    }
+
+    var states = {};
 
     return function () {
         var args = [].slice.call(arguments);
         var callback = args.pop();
-        args.push(done);
+        var by = options.by ? options.by.apply(null, args) : '';
+        if (!states[by]) states[by] = {running: 0, queue: []};
+        var state = states[by];
 
         function done() {
-            running--;
+            state.running--;
             callback.apply(null, arguments);
-            if (queue.length)
-                func.apply(null, queue.shift());
+            if (state.queue.length)
+                func.apply(null, state.queue.shift());
         }
+        args.push(done);
 
-        if (running < concurrency) {
-            running++;
+        if (state.running < options.limit) {
+            state.running++;
             func.apply(null, args);
         } else {
-            queue.push(args);
+            state.queue.push(args);
         }
     }
 }

@@ -84,4 +84,4 @@ cachedGet('http://...')(function (err, body) {
 
 ### retry([options | attempts = 5], func)
 
-### limit(concurrency, func)
+### limit([options | limit], func)
