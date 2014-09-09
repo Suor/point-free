@@ -183,7 +183,7 @@ describe('retry', function () {
         })
     })
 
-    it('should fail', function (done) {
+    it('should eventually fail', function (done) {
         pf.retry(2, failing(2, noop))(function (err) {
             assert.equal(err, "Error 2")
             done()
