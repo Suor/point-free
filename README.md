@@ -45,4 +45,4 @@ function copyFile(from, to, callback) {
 
 ### parallel(funcs...)
 
-### retry([attempts = 5], func)
+### retry([options | attempts = 5], func)

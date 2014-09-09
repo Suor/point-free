@@ -83,20 +83,27 @@ exports.parallel = function () {
     }
 }
 
-exports.retry = function (attempts, func) {
-    var left = func ? attempts : 5;
-    func = func || attempts;
+exports.retry = function (options, func) {
+    if (typeof options == 'function') {
+        func = options
+        options = {attempts: 5}
+    }
+    else if (typeof options == 'number') {
+        options = {attempts: options}
+    }
+    var left = options.attempts;
 
     return function () {
         var args = [].slice.call(arguments);
         var callback = args.pop();
+        args.push(retry);
 
         function retry(err) {
             left--;
             if (err && left)
-                return func.apply(null, args.concat([retry]))
+                return func.apply(null, args)
             return callback.apply(null, arguments);
         };
-        func.apply(null, args.concat([retry]))
+        func.apply(null, args)
     }
 }

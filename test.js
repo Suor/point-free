@@ -95,3 +95,46 @@ describe('parallel', function () {
         })
     })
 })
+
+
+describe('retry', function () {
+    function failing(n, func) {
+        var i = 0;
+
+        return function () {
+            var callback = arguments[arguments.length-1];
+
+            i++;
+            if (i <= n) callback("Error " + i)
+            else func.apply(null, arguments)
+        }
+    }
+    function noop(callback) {
+        callback(null);
+    }
+
+    it('should retry', function (done) {
+        pf.retry(failing(2, noop))(function (err) {
+            assert.ifError(err)
+            done()
+        })
+    })
+
+    it('should fail', function (done) {
+        pf.retry(2, failing(2, noop))(function (err) {
+            assert.equal(err, "Error 2")
+            done()
+        })
+    })
+
+    it('should preserve interface', function (done) {
+        function add(x, y, callback) {
+            callback(null, x + y);
+        }
+
+        pf.retry(failing(2, add))(1, 2, function (err, res) {
+            assert.equal(res, 3)
+            done()
+        })
+    })
+})
