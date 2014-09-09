@@ -83,6 +83,32 @@ exports.parallel = function () {
     }
 }
 
+exports.manual = function (states) {
+    var next = {};
+    var callback;
+
+    Object.keys(states).forEach(function (state) {
+        next[state] = function (err) {
+            var args;
+
+            if (err) return callback(err)
+            else {
+                args = [].slice.call(arguments, 1)
+                args.push(next)
+                states[state].apply(null, args)
+            }
+        }
+    })
+
+    return function () {
+        var args = [].slice.call(arguments);
+        next.end = callback = args.pop();
+        args.push(next);
+
+        states.start.apply(null, args);
+    }
+}
+
 exports.retry = function (options, func) {
     // handle defaults
     if (typeof options == 'function') {

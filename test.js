@@ -97,6 +97,29 @@ describe('parallel', function () {
 })
 
 
+describe('manual', function () {
+    it('should waterfall', function (done) {
+        pf.manual({
+            start: function (x, next) { next.sum(null, x / 2, x * 2) },
+            sum: function (y, z, next) { next.end(null, y + z); }
+        })(4, function (err, res) {
+            assert.equal(res, 10)
+            done()
+        })
+    })
+
+    it('should pass error', function (done) {
+        pf.manual({
+            start: function (next) { next.other('an error') },
+            other: function (next) { next.end(null); }
+        })(function (err) {
+            assert.equal(err, 'an error')
+            done()
+        })
+    })
+})
+
+
 describe('retry', function () {
     function failing(n, func) {
         var i = 0;

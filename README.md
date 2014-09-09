@@ -45,4 +45,41 @@ function copyFile(from, to, callback) {
 
 ### parallel(funcs...)
 
+### manual(states)
+
+```js
+function cachedGet(url) {
+    var filename = __dirname + '/cache/' + url.replace(/\//g, '#');
+
+    return pf.manual({
+        // always starts from 'start' state
+        start: function (next) {
+            fs.exists(filename, function (exists) {
+                // go to some new state
+                if (exists) next.readCache()
+                else next.request();
+            });
+        },
+        request: function (next) {
+            // use state transition as callback
+            request(url, next.writeCache);
+        },
+        readCache: function (next) {
+            // use next.end to leave state machine
+            fs.readFile(filename, 'utf-8', next.end);
+        },
+        writeCache: function (response, body, next) {
+            fs.writeFile(filename, body, 'utf-8', function (error) {
+                next.end(error, body);
+            });
+        }
+    });
+}
+
+cachedGet('http://...')(function (err, body) {
+    ...
+})
+```
+
+
 ### retry([options | attempts = 5], func)
