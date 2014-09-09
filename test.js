@@ -65,17 +65,17 @@ describe('parallel', function () {
     it('should be parallel', function (done) {
         var calls = [];
 
-        pf.serial(
+        pf.parallel(
             function (callback) { setTimeout(function () {calls.push(1); callback(null)}, 20) },
             function (callback) { setTimeout(function () {calls.push(2); callback(null)}, 10) }
         )(function (err) {
-            assert.deepEqual(calls, [1, 2])
+            assert.deepEqual(calls, [2, 1])
             done()
         })
     })
 
     it('should pass results', function (done) {
-        pf.serial(
+        pf.parallel(
             function (callback) { callback(null, 1, 2) },
             function (callback) { callback(null, 3) },
             function (callback) { callback(null) }
