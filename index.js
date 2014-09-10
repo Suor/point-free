@@ -69,16 +69,16 @@ exports.serial = function () {
 exports.parallel = function () {
     var tasks = [].slice.call(arguments);
     var results = [];
-    var done = 0;
+    var left = tasks.length;
     var callback;
 
     function handler(i) {
         return function (err) {
             if (err) return callback(err);
-            done++;
+            left--;
             if (arguments.length <= 2) results[i] = arguments[1]
             else results[i] = [].slice.call(arguments, 1)
-            if (done === tasks.length) return callback(null, results);
+            if (!left) return callback(null, results);
         }
     }
 
