@@ -85,6 +85,7 @@ exports.parallel = function () {
     return function (_callback) {
         callback = _callback;
 
+        // TODO: handle empty tasks
         for (var i = 0; i < tasks.length; i++) {
             tasks[i](handler(i))
         }
@@ -158,6 +159,7 @@ exports.auto = function (jobs) {
         }
     }
 
+    // TODO: handle empty tasks
     return function (_callback) {
         callback = _callback;
         recheck()
