@@ -125,15 +125,15 @@ describe('auto', function () {
         pf.auto({
             start: function (callback) { callback(null, 4) },
             divmul: ['start', function (x, callback) { callback(null, x / 2, x * 2) }],
-            sum: ['divmul', function (y, z, callback) { callback(null, y + z); }]
+            sum: ['divmul', function (yz, callback) { callback(null, yz[0] + yz[1]); }]
         })(function (err, res) {
-            assert.equal(res, 10)
+            assert.deepEqual(res, {start: 4, divmul: [2, 8], sum: 10})
             done()
         })
     })
 
     it('should pass error', function (done) {
-        pf.manual({
+        pf.auto({
             auto: function (callback) { callback('an error') },
             other: function (callback) { callback(null); }
         })(function (err) {

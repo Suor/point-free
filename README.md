@@ -81,6 +81,7 @@ cachedGet('http://...')(function (err, body) {
 })
 ```
 
+### auto(jobs)
 
 ### retry([options | attempts = 5], func)
 

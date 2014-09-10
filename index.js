@@ -117,6 +117,53 @@ exports.manual = function (states) {
     }
 }
 
+exports.auto = function (jobs) {
+    // TODO: checks if all jobs are reachable
+    var defs = {};
+    var left = Object.keys(jobs).length;
+    var results = {};
+    var callback;
+
+    // Parse definition
+    Object.keys(jobs).forEach(function (name, i) {
+        var def = jobs[name];
+        defs[name] = typeof def == 'function'
+            ? {deps: [], func: def}
+            : {deps: def.slice(0, -1), func: def[def.length - 1]};
+    })
+
+
+    function recheck() {
+        Object.keys(defs).forEach(function (name) {
+            var def = defs[name];
+            if (def.run) return;
+            if (def.deps.every(function (dep) { return results.hasOwnProperty(dep) })) {
+                var args = def.deps.map(function (dep) { return results[dep] });
+                args.push(handler(name));
+                defs[name].run = true;
+                def.func.apply(null, args);
+            }
+        })
+    }
+
+    function handler(name) {
+        return function (err) {
+            if (err) return callback(err);
+            left--;
+
+            if (arguments.length <= 2) results[name] = arguments[1]
+            else results[name] = [].slice.call(arguments, 1)
+            if (left) recheck()
+            else callback(null, results);
+        }
+    }
+
+    return function (_callback) {
+        callback = _callback;
+        recheck()
+    }
+}
+
 exports.retry = function (options, func) {
     // handle defaults
     if (typeof options == 'function') {
