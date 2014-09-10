@@ -22,21 +22,20 @@
 exports.waterfall = function () {
     // TODO: check tasks types?
     var tasks = [].slice.call(arguments);
-    var index = -1;
-    var callback;
-
-    function handler(err) {
-        if (err) return callback(err);
-        index++;
-        if (index >= tasks.length) return callback.apply(null, arguments);
-
-        var args = [].slice.call(arguments, 1);
-        tasks[index].apply(null, args.concat([handler]))
-    }
 
     return function () {
         var args = [].slice.call(arguments);
-        callback = args.pop();
+        var callback = args.pop();
+        var index = -1;
+
+        function handler(err) {
+            if (err) return callback(err);
+            index++;
+            if (index >= tasks.length) return callback.apply(null, arguments);
+
+            var args = [].slice.call(arguments, 1);
+            tasks[index].apply(null, args.concat([handler]))
+        }
 
         handler.apply(null, [null].concat(args));
     }
@@ -44,46 +43,43 @@ exports.waterfall = function () {
 
 exports.serial = function () {
     var tasks = [].slice.call(arguments);
-    var callback;
-    var results = [];
-    var index = -1;
 
-    function handler(err) {
-        if (err) return callback(err);
-        index++;
-        if (index) {
-            if (arguments.length <= 2) results.push(arguments[1])
-            else results.push([].slice.call(arguments, 1))
+    return function (callback) {
+        var results = [];
+        var index = -1;
+
+        function handler(err) {
+            if (err) return callback(err);
+            index++;
+            if (index) {
+                if (arguments.length <= 2) results.push(arguments[1])
+                else results.push([].slice.call(arguments, 1))
+            }
+            if (index >= tasks.length) return callback(null, results);
+
+            tasks[index](handler);
         }
-        if (index >= tasks.length) return callback(null, results);
 
-        tasks[index](handler);
-    }
-
-    return function (_callback) {
-        callback = _callback;
         handler(null);
     }
 }
 
 exports.parallel = function () {
     var tasks = [].slice.call(arguments);
-    var results = [];
-    var left = tasks.length;
-    var callback;
 
-    function handler(i) {
-        return function (err) {
-            if (err) return callback(err);
-            left--;
-            if (arguments.length <= 2) results[i] = arguments[1]
-            else results[i] = [].slice.call(arguments, 1)
-            if (!left) return callback(null, results);
+    return function (callback) {
+        var left = tasks.length;
+        var results = [];
+
+        function handler(i) {
+            return function (err) {
+                if (err) return callback(err);
+                left--;
+                if (arguments.length <= 2) results[i] = arguments[1]
+                else results[i] = [].slice.call(arguments, 1)
+                if (!left) return callback(null, results);
+            }
         }
-    }
-
-    return function (_callback) {
-        callback = _callback;
 
         // TODO: handle empty tasks
         for (var i = 0; i < tasks.length; i++) {
@@ -93,25 +89,20 @@ exports.parallel = function () {
 }
 
 exports.manual = function (states) {
-    var next = {};
-    var callback;
+    return function () {
+        var args = [].slice.call(arguments);
+        var next = {};
+        var callback = next.end = args.pop();
 
-    Object.keys(states).forEach(function (state) {
-        next[state] = function (err) {
-            var args;
+        Object.keys(states).forEach(function (state) {
+            next[state] = function (err) {
+                if (err) return callback(err)
 
-            if (err) return callback(err)
-            else {
-                args = [].slice.call(arguments, 1)
+                var args = [].slice.call(arguments, 1)
                 args.push(next)
                 states[state].apply(null, args)
             }
-        }
-    })
-
-    return function () {
-        var args = [].slice.call(arguments);
-        next.end = callback = args.pop();
+        })
         args.push(next);
 
         states.start.apply(null, args);
@@ -121,9 +112,6 @@ exports.manual = function (states) {
 exports.auto = function (jobs) {
     // TODO: checks if all jobs are reachable
     var defs = {};
-    var left = Object.keys(jobs).length;
-    var results = {};
-    var callback;
 
     // Parse definition
     Object.keys(jobs).forEach(function (name, i) {
@@ -134,34 +122,37 @@ exports.auto = function (jobs) {
     })
 
 
-    function recheck() {
-        Object.keys(defs).forEach(function (name) {
-            var def = defs[name];
-            if (def.run) return;
-            if (def.deps.every(function (dep) { return results.hasOwnProperty(dep) })) {
-                var args = def.deps.map(function (dep) { return results[dep] });
-                args.push(handler(name));
-                defs[name].run = true;
-                def.func.apply(null, args);
-            }
-        })
-    }
-
-    function handler(name) {
-        return function (err) {
-            if (err) return callback(err);
-            left--;
-
-            if (arguments.length <= 2) results[name] = arguments[1]
-            else results[name] = [].slice.call(arguments, 1)
-            if (left) recheck()
-            else callback(null, results);
-        }
-    }
-
     // TODO: handle empty tasks
-    return function (_callback) {
-        callback = _callback;
+    return function (callback) {
+        var left = Object.keys(jobs).length;
+        var run = {};
+        var results = {};
+
+        function recheck() {
+            Object.keys(defs).forEach(function (name) {
+                var def = defs[name];
+                if (run[name]) return;
+                if (def.deps.every(function (dep) { return results.hasOwnProperty(dep) })) {
+                    var args = def.deps.map(function (dep) { return results[dep] });
+                    args.push(handler(name));
+                    run[name] = true;
+                    def.func.apply(null, args);
+                }
+            })
+        }
+
+        function handler(name) {
+            return function (err) {
+                if (err) return callback(err);
+                left--;
+
+                if (arguments.length <= 2) results[name] = arguments[1]
+                else results[name] = [].slice.call(arguments, 1)
+                if (left) recheck()
+                else callback(null, results);
+            }
+        }
+
         recheck()
     }
 }
@@ -186,10 +177,8 @@ exports.retry = function (options, func) {
         }
     }
 
-    // State
-    var attempt = 0;
-
     return function () {
+        var attempt = 0;
         var args = [].slice.call(arguments);
         var callback = args.pop();
         args.push(retry);

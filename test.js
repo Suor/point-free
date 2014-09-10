@@ -22,6 +22,20 @@ describe('waterfall', function () {
             done()
         })
     })
+
+    it('should work concurrently', function (done) {
+        var func = pf.waterfall(function (callback) {
+            setTimeout(callback, 10);
+        })
+        var calls = [];
+
+        func(function () { calls.push(1) })
+        func(function () { calls.push(2) })
+        setTimeout(function () {
+            assert.deepEqual(calls, [1, 2]);
+            done();
+        }, 10);
+    })
 })
 
 
