@@ -232,20 +232,22 @@ exports.limit = function (options, func) {
         if (!states[by]) states[by] = {running: 0, queue: []};
         var state = states[by];
 
-        function done() {
+        function recheck() {
+            if (state.running < options.limit && state.queue.length) {
+                state.running++;
+                func.apply(null, state.queue.shift());
+            }
+        }
+
+        function handler() {
             state.running--;
             callback.apply(null, arguments);
-            if (state.queue.length)
-                func.apply(null, state.queue.shift());
+            recheck();
         }
-        args.push(done);
+        args.push(handler);
 
-        if (state.running < options.limit) {
-            state.running++;
-            func.apply(null, args);
-        } else {
-            state.queue.push(args);
-        }
+        state.queue.push(args);
+        recheck();
     }
     limited.states = states;
     if (!options.by) limited.state = states.only = {running: 0, queue: []};
