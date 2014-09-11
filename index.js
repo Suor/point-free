@@ -31,6 +31,8 @@ exports.waterfall = function () {
         var args = [].slice.call(arguments);
         var callback = args.pop();
         var index = -1;
+        if (typeof callback !== 'function')
+            throw TypeError("Can't use " + callback + " as callback")
 
         function handler(err) {
             if (err) return callback(err);
@@ -51,6 +53,8 @@ exports.serial = function () {
     return function (callback) {
         var results = [];
         var index = -1;
+        if (typeof callback !== 'function')
+            throw TypeError("Can't use " + callback + " as callback")
 
         function handler(err) {
             if (err) return callback(err);
@@ -74,6 +78,8 @@ exports.parallel = function () {
     return function (callback) {
         var left = tasks.length;
         var results = [];
+        if (typeof callback !== 'function')
+            throw TypeError("Can't use " + callback + " as callback")
 
         function handler(i) {
             return function (err) {
@@ -97,6 +103,8 @@ exports.manual = function (states) {
         var args = [].slice.call(arguments);
         var next = {};
         var callback = next.end = args.pop();
+        if (typeof callback !== 'function')
+            throw TypeError("Can't use " + callback + " as callback")
 
         Object.keys(states).forEach(function (state) {
             next[state] = function (err) {
@@ -131,6 +139,8 @@ exports.auto = function (jobs) {
         var left = Object.keys(jobs).length;
         var run = {};
         var results = {};
+        if (typeof callback !== 'function')
+            throw TypeError("Can't use " + callback + " as callback")
 
         function recheck() {
             Object.keys(defs).forEach(function (name) {
