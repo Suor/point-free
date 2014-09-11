@@ -1,4 +1,4 @@
-// Ideads:
+// Ideas:
 //  - support [arrays] and {objects} in serial() and parallel()
 //  - support <flow-func>(tasks, callback) syntax, aka async.compatible
 //  - select return value from serial(), parallel(), auto() like
@@ -9,6 +9,10 @@
 //      <flow-func>(...).select(function (res) { return res.... })
 //  - error/handle to handle errors from serial(), parallel(), auto() like
 //      serial(...).error(function (err, callback) {....})
+//  - pf.resend(callback, null, results[1]);
+//    pf.resend(results[1], callback)
+//    pf.send(job_id, callback)
+//    pf.sending(job_id, callback)
 //
 //  Use continuations everywhere? Not possible?
 //  This thing is really works best with returning continuation funcs, not node style.
