@@ -1,0 +1,13 @@
+0.1.0
+- added manual() and auto()
+- added parallel()
+- added limit()
+- added options arg to retry()
+- fixed concurrent work of almost all utils
+Backward incompatible changes:
+- renamed series() to serial()
+- serial() no longer pass args
+- multiple results from serial() are now packed into array
+
+0.0.1
+- initial hacks
