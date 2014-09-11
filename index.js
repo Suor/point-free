@@ -23,6 +23,9 @@
 //  - Support both styles?
 //  - Move to return continuation style? And write a dead library?
 
+
+// Combinators
+
 exports.waterfall = function () {
     // TODO: check tasks types?
     var tasks = [].slice.call(arguments);
@@ -171,6 +174,9 @@ exports.auto = function (jobs) {
     }
 }
 
+
+// Decorators
+
 exports.retry = function (options, func) {
     // handle defaults
     if (typeof options == 'function') {
@@ -242,4 +248,13 @@ exports.limit = function (options, func) {
             state.queue.push(args);
         }
     }
+}
+
+
+// Collections
+
+exports.map = function (tasks, worker) {
+    return exports.parallel.apply(null, tasks.map(function (task) {
+        return worker.bind(null, task)
+    }))
 }

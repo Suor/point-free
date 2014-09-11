@@ -86,3 +86,5 @@ cachedGet('http://...')(function (err, body) {
 ### retry([options | attempts = 5], func)
 
 ### limit([options | limit], func)
+
+### map(tasks, worker)
