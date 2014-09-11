@@ -225,11 +225,10 @@ exports.limit = function (options, func) {
     }
 
     var states = {};
-
-    return function () {
+    var limited = function () {
         var args = [].slice.call(arguments);
         var callback = args.pop();
-        var by = options.by ? options.by.apply(null, args) : '';
+        var by = options.by ? options.by.apply(null, args) : 'only';
         if (!states[by]) states[by] = {running: 0, queue: []};
         var state = states[by];
 
@@ -248,6 +247,10 @@ exports.limit = function (options, func) {
             state.queue.push(args);
         }
     }
+    limited.states = states;
+    if (!options.by) limited.state = states.only = {running: 0, queue: []};
+
+    return limited;
 }
 
 
