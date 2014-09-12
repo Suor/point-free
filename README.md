@@ -87,4 +87,6 @@ cachedGet('http://...')(function (err, body) {
 
 ### limit([options | limit], func)
 
+### each(tasks, worker)
+
 ### map(tasks, worker)
