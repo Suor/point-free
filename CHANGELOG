@@ -1,3 +1,10 @@
+0.2.0
+- added each()
+- added map()
+- provided introspection on limit()
+- fixed limit()
+- check callback type
+
 0.1.0
 - added manual() and auto()
 - added parallel()
