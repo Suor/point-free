@@ -243,6 +243,8 @@ describe('retry', function () {
         })
     })
 
+})
+
 
 describe('limit', function () {
     it('should limit', function (done) {
