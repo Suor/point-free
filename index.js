@@ -254,18 +254,3 @@ exports.limit = function (options, func) {
 
     return limited;
 }
-
-
-// Collections
-
-exports.each = function (tasks, worker) {
-    return function (callback) {
-        exports.map(tasks, worker)(function (err) { callback(err) }) // Strip results
-    }
-}
-
-exports.map = function (tasks, worker) {
-    return exports.parallel.apply(null, tasks.map(function (task) {
-        return worker.bind(null, task)
-    }))
-}
