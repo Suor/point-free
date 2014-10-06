@@ -101,6 +101,8 @@ cachedGet('http://...')(function (err, body) {
 
 ### auto(jobs)
 
+### noop
+
 
 ## Decorators
 

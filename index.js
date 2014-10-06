@@ -174,6 +174,8 @@ exports.auto = function (jobs) {
     }
 }
 
+export.noop = function (callback) {callback()};
+
 
 // Decorators
 
