@@ -13,10 +13,14 @@ npm install point-free
 ```
 
 
-## Usage
+## Combinators
 
-Designed to minimize callback and arguments bookkeeping:
+### waterfall(funcs...)
 
+Combines several functions to be executed serially with results of each function
+passed to next one. Arguments to resulting function before callback are passed to the first step.
+Results of last function will be returned as a result of combined action.
+Any error will be passed out immediately, stopping chain of execution.
 
 ```js
 var pf = require('point-free');
@@ -29,7 +33,7 @@ var displayFile = pf.waterfall(
 displayFile('filename.txt', callback)
 ```
 
-However, can be easily used in a non point-free manner when needed:
+When it's not possible to pass everything to first function `waterfall()` could be enclosed and either called immediately...:
 
 ```js
 function copyFile(from, to, callback) {
@@ -40,9 +44,20 @@ function copyFile(from, to, callback) {
 }
 ```
 
-## API
+... or passed to other combinator or decorator:
 
-### waterfall(funcs...)
+```js
+pf.serial(
+    action1,
+    // Combined subtask
+    pf.waterfall(
+        fetchData,
+        actOnIt
+    ),
+    // ...
+)
+```
+
 
 ### serial(funcs...)
 
@@ -85,6 +100,9 @@ cachedGet('http://...')(function (err, body) {
 ```
 
 ### auto(jobs)
+
+
+## Decorators
 
 ### retry([options | attempts = 5], func)
 
