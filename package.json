@@ -1,7 +1,7 @@
 {
   "name": "point-free",
   "version": "0.2.0",
-  "description": "Point free async combinators",
+  "description": "Async combinators and decorators collection",
   "keywords": [
     "point-free", "async", "higher-order", "combinator", "flow"
   ],

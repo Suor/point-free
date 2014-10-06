@@ -1,6 +1,9 @@
 # Point free async utilities
 
-...
+This library designed to encourage composition of a program from Node.js style
+asynchronous primitives. It provides generally useful combinators -
+things that combine several function into one, and decorators -
+wrappers that alter async function behavior some way.
 
 
 ## Installation
