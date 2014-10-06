@@ -256,3 +256,18 @@ exports.limit = function (options, func) {
 
     return limited;
 }
+
+exports.fallback = function (defaultValue, func) {
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+
+        function cb(err) {
+            if (err) return callback(undefined, defaultValue);
+            callback.apply(null, arguments);
+        }
+        args.push(cb);
+
+        func.apply(null,  args);
+    }
+}
