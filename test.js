@@ -297,6 +297,23 @@ describe('limit', function () {
 })
 
 
+describe('fallback', function () {
+    it('should return default', function (done) {
+        pf.fallback(42, function (callback) { callback('err') })(function (err, res) {
+            assert.equal(res, 42);
+            done();
+        })
+    })
+
+    it('should pass through', function (done) {
+        pf.fallback(42, function (callback) { callback(undefined, 10) })(function (err, res) {
+            assert.equal(res, 10);
+            done();
+        })
+    })
+})
+
+
 function _time(func) {
     return function () {
         var args = [].slice.call(arguments);
