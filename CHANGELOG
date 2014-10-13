@@ -1,3 +1,9 @@
+0.3.0
+- added fallback decorator
+- added noop combinator
+Bacward incompatible changes
+- removed each() and map()
+
 0.2.0
 - added each()
 - added map()
