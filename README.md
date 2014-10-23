@@ -140,3 +140,15 @@ pf.waterfall(
 ```js
 var delayedHandler = pf.waterfall(pf.sleep(1000), handler);
 ```
+
+
+## Collections
+
+### chunk(size, seq, func)
+
+```js
+// Insert links into database in chunks of 1000
+pf.chunk(1000, links, function (chunk, callback) {
+    db.insert('link', chunk).run(callback);
+})(callback)
+```

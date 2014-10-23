@@ -306,6 +306,9 @@ pf.auto = function (jobs) {
     }
 }
 
+
+// Primitives
+
 pf.noop = function () {
     var args = [].slice.call(arguments);
     var callback = args.pop();
@@ -323,3 +326,35 @@ pf.sleep = function (timeout) {
         setTimeout(callback.bind.apply(callback, args), timeout);
     }
 }
+
+
+// Collections
+
+pf.chunk = function (size, data, func) {
+    return function (callback) {
+        var done = 0;
+        var results = [];
+
+        async.whilst(
+            function () {return done < data.length},
+            function (callback) {
+                var chunk = data.slice(done, done + size);
+
+                func(chunk, function (err, res) {
+                    if (err) return callback(err);
+                    done += chunk.length;
+                    if (results && Array.isArray(res) && res.length == chunk.length)
+                        results = results.concat(res);
+                    else
+                        results = undefined;
+                    callback()
+                })
+            },
+            function (err) {
+                if (err) return callback(err);
+                callback(undefined, results);
+            }
+        )
+    }
+}
+
