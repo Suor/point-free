@@ -23,10 +23,11 @@
 //  - Support both styles?
 //  - Move to return continuation style? And write a dead library?
 
+var pf = exports;
 
 // Combinators
 
-exports.waterfall = function () {
+pf.waterfall = function () {
     // TODO: check tasks types?
     var tasks = [].slice.call(arguments);
 
@@ -50,7 +51,7 @@ exports.waterfall = function () {
     }
 }
 
-exports.serial = function () {
+pf.serial = function () {
     var tasks = [].slice.call(arguments);
 
     return function (callback) {
@@ -75,7 +76,7 @@ exports.serial = function () {
     }
 }
 
-exports.parallel = function () {
+pf.parallel = function () {
     var tasks = [].slice.call(arguments);
 
     return function (callback) {
@@ -101,7 +102,7 @@ exports.parallel = function () {
     }
 }
 
-exports.manual = function (states) {
+pf.manual = function (states) {
     return function () {
         var args = [].slice.call(arguments);
         var next = {};
@@ -124,7 +125,7 @@ exports.manual = function (states) {
     }
 }
 
-exports.auto = function (jobs) {
+pf.auto = function (jobs) {
     // TODO: checks if all jobs are reachable
     var defs = {};
 
@@ -179,7 +180,7 @@ exports.noop = function (callback) {callback()};
 
 // Decorators
 
-exports.retry = function (options, func) {
+pf.retry = function (options, func) {
     // handle defaults
     if (typeof options == 'function') {
         func = options
@@ -220,7 +221,7 @@ exports.retry = function (options, func) {
     }
 }
 
-exports.limit = function (options, func) {
+pf.limit = function (options, func) {
     // handle defaults
     if (typeof options == 'number') {
         options = {limit: options}
@@ -257,7 +258,7 @@ exports.limit = function (options, func) {
     return limited;
 }
 
-exports.fallback = function (defaultValue, func) {
+pf.fallback = function (defaultValue, func) {
     return function () {
         var args = [].slice.call(arguments);
         var callback = args.pop();
