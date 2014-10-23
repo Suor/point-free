@@ -23,6 +23,7 @@
 //  - Support both styles?
 //  - Move to return continuation style? And write a dead library?
 
+var async = require('async');
 var pf = exports;
 
 
