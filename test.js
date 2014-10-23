@@ -173,6 +173,18 @@ describe('auto', function () {
     })
 })
 
+describe('noop', function (done) {
+    it('should pass arguments', function (done) {
+        pf.noop(42, 'x', function (err, res, res2) {
+            assert.ifError(err);
+            assert.equal(res, 42);
+            assert.equal(res2, 'x');
+            done();
+        })
+    })
+})
+
+
 
 describe('retry', function () {
     function failing(n, func) {

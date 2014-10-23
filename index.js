@@ -175,8 +175,13 @@ pf.auto = function (jobs) {
     }
 }
 
-exports.noop = function (callback) {callback()};
+pf.noop = function () {
+    var args = [].slice.call(arguments);
+    var callback = args.pop();
 
+    args.unshift(null);
+    callback.apply(null, args);
+}
 
 // Decorators
 
