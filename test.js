@@ -198,19 +198,16 @@ describe('retry', function () {
             else func.apply(null, arguments)
         }
     }
-    function noop(callback) {
-        callback(null);
-    }
 
     it('should retry', function (done) {
-        pf.retry(failing(2, noop))(function (err) {
+        pf.retry(failing(2, pf.noop))(function (err) {
             assert.ifError(err)
             done()
         })
     })
 
     it('should eventually fail', function (done) {
-        pf.retry(2, failing(2, noop))(function (err) {
+        pf.retry(2, failing(2, pf.noop))(function (err) {
             assert.equal(err, "Error 2")
             done()
         })
@@ -229,14 +226,14 @@ describe('retry', function () {
 
     describe('timeout', function () {
         it('should take constant', function (done) {
-            _time(pf.retry({timeout: 10}, failing(2, noop)))(function (delay) {
+            _time(pf.retry({timeout: 10}, failing(2, pf.noop)))(function (delay) {
                 assert(delay >= 20)
                 done()
             })
         })
 
         it('should respect factor', function (done) {
-            _time(pf.retry({timeout: 10, factor: 2}, failing(2, noop)))(function (delay) {
+            _time(pf.retry({timeout: 10, factor: 2}, failing(2, pf.noop)))(function (delay) {
                 assert(delay >= 30)
                 done()
             })
@@ -248,7 +245,7 @@ describe('retry', function () {
             }
 
             var start = (new Date()).getTime();
-            _time(pf.retry({timeout: timeout}, failing(2, noop)))(function (delay) {
+            _time(pf.retry({timeout: timeout}, failing(2, pf.noop)))(function (delay) {
                 assert(delay >= 30)
                 done()
             })
