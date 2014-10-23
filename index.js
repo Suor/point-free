@@ -25,6 +25,104 @@
 
 var pf = exports;
 
+
+// Decorators
+
+pf.retry = function (options, func) {
+    // handle defaults
+    if (typeof options == 'function') {
+        func = options
+        options = {}
+    }
+    else if (typeof options == 'number') {
+        options = {attempts: options}
+    }
+    options.attempts = options.attempts || 5;
+
+    // handle timeout
+    var timeout = options.timeout;
+    var factor = options.factor || 1
+    if (typeof options.timeout == 'number') {
+        options.timeout = function (attempt) {
+            return timeout * Math.pow(factor, attempt - 1)
+        }
+    }
+
+    return function () {
+        var attempt = 0;
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+        args.push(retry);
+
+        function retry(err) {
+            attempt++
+            if (err && attempt < options.attempts) {
+                if (timeout)
+                    setTimeout(function () { func.apply(null, args) }, options.timeout(attempt))
+                else
+                    func.apply(null, args)
+            }
+            else
+                callback.apply(null, arguments)
+        }
+        func.apply(null, args)
+    }
+}
+
+pf.limit = function (options, func) {
+    // handle defaults
+    if (typeof options == 'number') {
+        options = {limit: options}
+    }
+
+    // TODO: gc states
+    var states = {};
+    var limited = function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+        var by = options.by ? options.by.apply(null, args) : 'only';
+        if (!states[by]) states[by] = {running: 0, queue: []};
+        var state = states[by];
+
+        function recheck() {
+            if (state.running < options.limit && state.queue.length) {
+                state.running++;
+                func.apply(null, state.queue.shift());
+            }
+        }
+
+        function handler() {
+            state.running--;
+            callback.apply(null, arguments);
+            recheck();
+        }
+        args.push(handler);
+
+        state.queue.push(args);
+        recheck();
+    }
+    limited.states = states;
+    if (!options.by) limited.state = states.only = {running: 0, queue: []};
+
+    return limited;
+}
+
+pf.fallback = function (defaultValue, func) {
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+
+        function cb(err) {
+            if (err) return callback(undefined, defaultValue);
+            callback.apply(null, arguments);
+        }
+        args.push(cb);
+
+        func.apply(null,  args);
+    }
+}
+
+
 // Combinators
 
 pf.waterfall = function () {
@@ -181,99 +279,4 @@ pf.noop = function () {
 
     args.unshift(null);
     callback.apply(null, args);
-}
-
-// Decorators
-
-pf.retry = function (options, func) {
-    // handle defaults
-    if (typeof options == 'function') {
-        func = options
-        options = {}
-    }
-    else if (typeof options == 'number') {
-        options = {attempts: options}
-    }
-    options.attempts = options.attempts || 5;
-
-    // handle timeout
-    var timeout = options.timeout;
-    var factor = options.factor || 1
-    if (typeof options.timeout == 'number') {
-        options.timeout = function (attempt) {
-            return timeout * Math.pow(factor, attempt - 1)
-        }
-    }
-
-    return function () {
-        var attempt = 0;
-        var args = [].slice.call(arguments);
-        var callback = args.pop();
-        args.push(retry);
-
-        function retry(err) {
-            attempt++
-            if (err && attempt < options.attempts) {
-                if (timeout)
-                    setTimeout(function () { func.apply(null, args) }, options.timeout(attempt))
-                else
-                    func.apply(null, args)
-            }
-            else
-                callback.apply(null, arguments)
-        }
-        func.apply(null, args)
-    }
-}
-
-pf.limit = function (options, func) {
-    // handle defaults
-    if (typeof options == 'number') {
-        options = {limit: options}
-    }
-
-    var states = {};
-    var limited = function () {
-        var args = [].slice.call(arguments);
-        var callback = args.pop();
-        var by = options.by ? options.by.apply(null, args) : 'only';
-        if (!states[by]) states[by] = {running: 0, queue: []};
-        var state = states[by];
-
-        function recheck() {
-            if (state.running < options.limit && state.queue.length) {
-                state.running++;
-                func.apply(null, state.queue.shift());
-            }
-        }
-
-        function handler() {
-            state.running--;
-            callback.apply(null, arguments);
-            recheck();
-        }
-        args.push(handler);
-
-        state.queue.push(args);
-        recheck();
-    }
-    limited.states = states;
-    if (!options.by) limited.state = states.only = {running: 0, queue: []};
-
-    return limited;
-}
-
-pf.fallback = function (defaultValue, func) {
-    return function () {
-        var args = [].slice.call(arguments);
-        var callback = args.pop();
-
-        function cb(err) {
-            if (err) return callback(undefined, defaultValue);
-            callback.apply(null, arguments);
-        }
-        args.push(cb);
-
-        func.apply(null,  args);
-    }
 }

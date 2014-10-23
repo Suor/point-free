@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "description": "Async combinators and decorators collection",
   "keywords": [
-    "point-free", "async", "higher-order", "combinator", "flow"
+    "point-free", "async", "higher-order", "combinator", "decorator", "flow"
   ],
   "author": "Alexander Schepanovski",
   "homepage": "http://github.com/Suor/point-free",

@@ -1,9 +1,10 @@
 # Point free async utilities
 
 This library designed to encourage composition of a program from Node.js style
-asynchronous primitives. It provides generally useful combinators -
-things that combine several function into one, and decorators -
-wrappers that alter async function behavior some way.
+asynchronous primitives. It provides generally useful:
+
+- decorators - wrappers that alter async function behavior some way,
+- combinators - things that combine several functions into one.
 
 
 ## Installation
@@ -11,6 +12,15 @@ wrappers that alter async function behavior some way.
 ```
 npm install point-free
 ```
+
+
+## Decorators
+
+### retry([options | attempts = 5], func)
+
+### limit([options | limit], func)
+
+### fallback(defaultValue, func)
 
 
 ## Combinators
@@ -102,12 +112,3 @@ cachedGet('http://...')(function (err, body) {
 ### auto(jobs)
 
 ### noop
-
-
-## Decorators
-
-### retry([options | attempts = 5], func)
-
-### limit([options | limit], func)
-
-### fallback(defaultValue, func)
