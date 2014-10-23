@@ -1,3 +1,11 @@
+    async.each(_.keys(JOBS), pf.handle(shutdownJob, function (err) {
+        debug('Job %d shut down: %s', job_id, err ? err.stack || err : 'OK');
+        callback();
+    }), function () {
+        debug('Queue is shut down.');
+        process.exit();
+    })
+
 // Passing arguments to particular functions in waterfall
 var copyFile = pf.waterfall(
     1, fs.readFile,
