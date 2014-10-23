@@ -280,3 +280,13 @@ pf.noop = function () {
     args.unshift(null);
     callback.apply(null, args);
 }
+
+pf.sleep = function (timeout) {
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+
+        args.unshift(null, null);
+        setTimeout(callback.bind.apply(callback, args), timeout);
+    }
+}

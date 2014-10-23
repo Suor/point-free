@@ -111,4 +111,23 @@ cachedGet('http://...')(function (err, body) {
 
 ### auto(jobs)
 
+
+## Primitives
+
 ### noop
+
+A nice thing when you can do something conditionally:
+
+```js
+pf.waterfall(
+    jobs[id] ? pf.noop : pf.loadJob,
+    // ...
+)
+```
+
+
+### sleep(timeout)
+
+```js
+var delayedHandler = pf.waterfall(pf.sleep(1000), handler);
+```

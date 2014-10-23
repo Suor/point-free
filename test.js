@@ -184,6 +184,24 @@ describe('noop', function (done) {
     })
 })
 
+describe('sleep', function (done) {
+    it('should pass arguments', function (done) {
+        pf.sleep(0)(42, 'x', function (err, res, res2) {
+            assert.ifError(err);
+            assert.equal(res, 42);
+            assert.equal(res2, 'x');
+            done();
+        })
+    })
+
+    it('should sleep', function (done) {
+        _time(pf.sleep(20))(function (delay) {
+            assert(delay >= 20)
+            done()
+        })
+    })
+})
+
 
 
 describe('retry', function () {
@@ -252,6 +270,26 @@ describe('retry', function () {
         })
     })
 
+    // describe('on', function () {
+    //     it('should take class', function (done) {
+    //         pf.retry(failing(1, pf.noop))(function (delay) {
+    //             assert(delay >= 20)
+    //             done()
+    //         })
+    //     })
+
+    //     it('should take function', function (done) {
+    //         function timeout(attempt) {
+    //             return 10 * Math.pow(2, attempt - 1)
+    //         }
+
+    //         var start = (new Date()).getTime();
+    //         _time(pf.retry({timeout: timeout}, failing(2, pf.noop)))(function (delay) {
+    //             assert(delay >= 30)
+    //             done()
+    //         })
+    //     })
+    // })
 })
 
 
