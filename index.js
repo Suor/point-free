@@ -122,6 +122,39 @@ pf.fallback = function (defaultValue, func) {
     }
 }
 
+// Debugging decorators
+
+pf.logCalls = function (logger, func) {
+    if (!func) {
+        func = logger;
+        logger = console.log.bind(console);
+    }
+
+    return function () {
+        logger(arguments);
+        func.apply(null, arguments);
+    }
+}
+
+pf.logErrors = function (logger, func) {
+    if (!func) {
+        func = logger;
+        logger = console.error.bind(console);
+    }
+
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+
+        args.push(function (err) {
+            if (err) logger(err.stack || 'Error: ' + err);
+            callback.apply(null, arguments);
+        })
+        func.apply(null, args);
+    }
+}
+
+
 
 // Combinators
 
