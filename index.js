@@ -359,3 +359,53 @@ pf.chunk = function (size, data, func) {
     }
 }
 
+// pf.chunk = function (size, data, func) {
+//     var done = 0;
+//     var results = [];
+
+//     return pf.serial(
+//         pf.while(
+//             function () {return done < data.length},
+//             function (callback) {
+//                 var chunk = data.slice(done, done + size);
+
+//                 func(chunk, function (err, res) {
+//                     if (err) return callback(err);
+//                     done += chunk.length;
+//                     if (results && Array.isArray(res) && res.length == chunk.length)
+//                         results = results.concat(res);
+//                     else
+//                         results = undefined;
+//                     callback()
+//                 })
+//             }
+//         ),
+//         function (callback) {
+//             callback(undefined, results);
+//         }
+//     )
+// }
+
+// pf.chunk = function (size, data, func) {
+//     var done = 0;
+//     var results = [];
+
+//     return pf.while(
+//         function () {return done < data.length},
+//         function (callback) {
+//             var chunk = data.slice(done, done + size);
+
+//             func(chunk, function (err, res) {
+//                 if (err) return callback(err);
+//                 done += chunk.length;
+//                 if (results && Array.isArray(res) && res.length == chunk.length)
+//                     results = results.concat(res);
+//                 else
+//                     results = undefined;
+//                 callback()
+//             })
+//         }
+//     ).serial(function (callback) {
+//         callback(undefined, results);
+//     })
+// }
