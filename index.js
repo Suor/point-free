@@ -186,7 +186,9 @@ pf.waterfall = function () {
 pf.serial = function () {
     var tasks = [].slice.call(arguments);
 
-    return function (callback) {
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
         var results = [];
         var index = -1;
         if (typeof callback !== 'function')
@@ -201,17 +203,19 @@ pf.serial = function () {
             }
             if (index >= tasks.length) return callback(null, results);
 
-            tasks[index](handler);
+            tasks[index].apply(null, args.concat([handler]))
         }
 
-        handler(null);
+        handler.apply(null, [null].concat(args));
     }
 }
 
 pf.parallel = function () {
     var tasks = [].slice.call(arguments);
 
-    return function (callback) {
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
         var left = tasks.length;
         var results = [];
         if (typeof callback !== 'function')
@@ -227,9 +231,8 @@ pf.parallel = function () {
             }
         }
 
-        // TODO: handle empty tasks
         for (var i = 0; i < tasks.length; i++) {
-            tasks[i](handler(i))
+            tasks[i].apply(null, args.concat([handler(i)]))
         }
     }
 }
