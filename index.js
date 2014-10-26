@@ -9,6 +9,7 @@
 //      <flow-func>(...).select(function (res) { return res.... })
 //  - error/handle to handle errors from serial(), parallel(), auto() like
 //      serial(...).error(function (err, callback) {....})
+//  - pf.clear to clear results in waterfall
 
 var async = require('async');
 
