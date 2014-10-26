@@ -2,6 +2,27 @@ var assert = require('assert')
 var pf = require('./index')
 
 
+describe('module wrapping', function () {
+    it('should pass function thorugh', function () {
+        var func = function () {};
+        var wrapped = pf(func);
+        assert.equal(typeof wrapped, 'function');
+        assert.equal(wrapped, func);
+    })
+
+    it('should fall', function (done) {
+        pf(function (x, callback) {
+            callback(null, x * 2)
+        }).fall(function (y, callback) {
+            callback(null, y + 1)
+        })(10, function (err, res) {
+            assert.equal(res, 21);
+            done()
+        })
+    })
+})
+
+
 describe('waterfall', function () {
     it('should pass arguments', function (done) {
         pf.waterfall(

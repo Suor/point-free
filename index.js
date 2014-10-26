@@ -11,7 +11,14 @@
 //      serial(...).error(function (err, callback) {....})
 
 var async = require('async');
-var pf = exports;
+
+
+var pf = module.exports = function (func) {
+    func.fall = function (next) {
+        return pf.waterfall(func, next);
+    }
+    return func;
+}
 
 
 // Decorators
@@ -353,7 +360,7 @@ pf.chunk = function (size, data, func) {
 //     var done = 0;
 //     var results = [];
 
-//     return pf.serial(
+//     return pf.waterfall(
 //         pf.while(
 //             function () {return done < data.length},
 //             function (callback) {
@@ -395,7 +402,7 @@ pf.chunk = function (size, data, func) {
 //                 callback()
 //             })
 //         }
-//     ).serial(function (callback) {
+//     ).fall(function (callback) {
 //         callback(null, results);
 //     })
 // }
