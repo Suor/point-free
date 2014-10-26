@@ -101,7 +101,7 @@ pf.fallback = function (defaultValue, func) {
         var callback = args.pop();
 
         function cb(err) {
-            if (err) return callback(undefined, defaultValue);
+            if (err) return callback(null, defaultValue);
             callback.apply(null, arguments);
         }
         args.push(cb);
@@ -337,13 +337,13 @@ pf.chunk = function (size, data, func) {
                     if (results && Array.isArray(res) && res.length == chunk.length)
                         results = results.concat(res);
                     else
-                        results = undefined;
+                        results = null;
                     callback()
                 })
             },
             function (err) {
                 if (err) return callback(err);
-                callback(undefined, results);
+                callback(null, results);
             }
         )
     }
@@ -365,13 +365,13 @@ pf.chunk = function (size, data, func) {
 //                     if (results && Array.isArray(res) && res.length == chunk.length)
 //                         results = results.concat(res);
 //                     else
-//                         results = undefined;
+//                         results = null;
 //                     callback()
 //                 })
 //             }
 //         ),
 //         function (callback) {
-//             callback(undefined, results);
+//             callback(null, results);
 //         }
 //     )
 // }
@@ -391,11 +391,11 @@ pf.chunk = function (size, data, func) {
 //                 if (results && Array.isArray(res) && res.length == chunk.length)
 //                     results = results.concat(res);
 //                 else
-//                     results = undefined;
+//                     results = null;
 //                 callback()
 //             })
 //         }
 //     ).serial(function (callback) {
-//         callback(undefined, results);
+//         callback(null, results);
 //     })
 // }
