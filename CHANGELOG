@@ -1,3 +1,9 @@
+0.4.0
+- added logCalls() and logErrors()
+- added chunk()
+- added sleep()
+- made noop pass through args
+
 0.3.0
 - added fallback decorator
 - added noop combinator
