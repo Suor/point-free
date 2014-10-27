@@ -71,7 +71,6 @@ pf.limit = function (options, func) {
         options = {limit: options}
     }
 
-    // TODO: gc states
     var states = {};
     var limited = function () {
         var args = [].slice.call(arguments);
@@ -89,8 +88,9 @@ pf.limit = function (options, func) {
 
         function handler() {
             state.running--;
+            if (!state.running && !state.queue.length) delete states[by];
             callback.apply(null, arguments);
-            recheck();
+            recheck(); // TODO: think of immediate recheck
         }
         args.push(handler);
 
