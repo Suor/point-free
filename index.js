@@ -132,6 +132,24 @@ pf.logCalls = function (logger, func) {
     }
 }
 
+pf.logExits = function (logger, func) {
+    if (!func) {
+        func = logger;
+        logger = console.log.bind(console);
+    }
+
+    return function () {
+        var args = [].slice.call(arguments);
+        var callback = args.pop();
+
+        args.push(function (err) {
+            logger(arguments);
+            callback.apply(null, arguments);
+        })
+        func.apply(null, args);
+    }
+}
+
 pf.logErrors = function (logger, func) {
     if (!func) {
         func = logger;

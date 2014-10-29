@@ -27,6 +27,11 @@ npm install point-free
 On each function call pass its `arguments` to `logger`.
 
 
+### logExits([logger = console.log], func)
+
+On each function callback call pass its `arguments` to `logger`.
+
+
 ### logErrors([logger = console.error], func)
 
 Pass all function errors to `logger`. They are still passed the normal way too.
