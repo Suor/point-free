@@ -1,3 +1,10 @@
+0.5.0
+- added logExits()
+- serial() and parallel() now pass their non-callback args to all subtasks
+- added experimental pf() wrapping
+- clean old states in limit() to prevent memory leak
+- use null instead of undefined for error in several places
+
 0.4.0
 - added logCalls() and logErrors()
 - added chunk()
