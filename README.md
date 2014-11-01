@@ -125,6 +125,10 @@ cachedGet('http://...')(function (err, body) {
 
 ### auto(jobs)
 
+### while(test, body)
+
+### doWhile(body, test)
+
 
 ## Primitives
 

@@ -1,5 +1,4 @@
 // Ideas:
-//  - support <flow-func>(tasks, callback) syntax, aka async.compatible
 //  - select return value from serial(), parallel(), auto() like
 //      serial(...).select(1)    // second
 //      parallel(...).select(-1) // last
@@ -8,9 +7,6 @@
 //      <flow-func>(...).select(function (res) { return res.... })
 //  - error/handle to handle errors from serial(), parallel(), auto() like
 //      serial(...).error(function (err, callback) {....})
-//  - pf.clear to clear results in waterfall
-
-var async = require('async');
 
 
 var pf = module.exports = function (func) {
@@ -322,6 +318,28 @@ pf.auto = function (jobs) {
     }
 }
 
+// NOTE: if body calls callback directly too many times stack overflow is possible
+pf.while = function (test, body) {
+    return function loop(callback) {
+        if (!test()) return callback(null);
+
+        body(function (err) {
+            if (err) return callback(err);
+            loop(callback);
+        });
+    }
+}
+
+pf.doWhile = function (body, test) {
+    return function loop(callback) {
+        body(function (err) {
+            if (err) return callback(err);
+            if (test()) return loop(callback);
+            callback(null);
+        });
+    }
+}
+
 
 // Primitives
 
@@ -366,76 +384,26 @@ pf.chunk = function (size, data, func) {
         var done = 0;
         var results = [];
 
-        async.whilst(
-            function () {return done < data.length},
-            function (callback) {
-                var chunk = data.slice(done, done + size);
+        pf.waterfall(
+            pf.while(
+                function () {return done < data.length},
+                function (callback) {
+                    var chunk = data.slice(done, done + size);
 
-                func(chunk, function (err, res) {
-                    if (err) return callback(err);
-                    done += chunk.length;
-                    if (results && Array.isArray(res) && res.length == chunk.length)
-                        results = results.concat(res);
-                    else
-                        results = null;
-                    callback()
-                })
-            },
-            function (err) {
-                if (err) return callback(err);
+                    func(chunk, function (err, res) {
+                        if (err) return callback(err);
+                        done += chunk.length;
+                        if (results && Array.isArray(res) && res.length == chunk.length)
+                            results = results.concat(res);
+                        else
+                            results = null;
+                        callback()
+                    })
+                }
+            ),
+            function (callback) {
                 callback(null, results);
             }
-        )
+        )(callback);
     }
 }
-
-// pf.chunk = function (size, data, func) {
-//     var done = 0;
-//     var results = [];
-
-//     return pf.waterfall(
-//         pf.while(
-//             function () {return done < data.length},
-//             function (callback) {
-//                 var chunk = data.slice(done, done + size);
-
-//                 func(chunk, function (err, res) {
-//                     if (err) return callback(err);
-//                     done += chunk.length;
-//                     if (results && Array.isArray(res) && res.length == chunk.length)
-//                         results = results.concat(res);
-//                     else
-//                         results = null;
-//                     callback()
-//                 })
-//             }
-//         ),
-//         function (callback) {
-//             callback(null, results);
-//         }
-//     )
-// }
-
-// pf.chunk = function (size, data, func) {
-//     var done = 0;
-//     var results = [];
-
-//     return pf.while(
-//         function () {return done < data.length},
-//         function (callback) {
-//             var chunk = data.slice(done, done + size);
-
-//             func(chunk, function (err, res) {
-//                 if (err) return callback(err);
-//                 done += chunk.length;
-//                 if (results && Array.isArray(res) && res.length == chunk.length)
-//                     results = results.concat(res);
-//                 else
-//                     results = null;
-//                 callback()
-//             })
-//         }
-//     ).fall(function (callback) {
-//         callback(null, results);
-//     })
-// }

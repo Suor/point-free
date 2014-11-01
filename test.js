@@ -310,27 +310,6 @@ describe('retry', function () {
             })
         })
     })
-
-    // describe('on', function () {
-    //     it('should take class', function (done) {
-    //         pf.retry(failing(1, pf.noop))(function (delay) {
-    //             assert(delay >= 20)
-    //             done()
-    //         })
-    //     })
-
-    //     it('should take function', function (done) {
-    //         function timeout(attempt) {
-    //             return 10 * Math.pow(2, attempt - 1)
-    //         }
-
-    //         var start = (new Date()).getTime();
-    //         _time(pf.retry({timeout: timeout}, failing(2, pf.noop)))(function (delay) {
-    //             assert(delay >= 30)
-    //             done()
-    //         })
-    //     })
-    // })
 })
 
 
@@ -424,6 +403,34 @@ describe('map', function () {
     })
 })
 
+
+describe('chunk', function () {
+    it('should be serial', function (done) {
+        var calls = [];
+
+        pf.chunk(2, [30, 20, 10], function (chunk, callback) {
+            setTimeout(function () {
+                calls.push(chunk[0]);
+                callback();
+            }, chunk[0]);
+        })(function (err) {
+            assert.deepEqual(calls, [30, 10]);
+            done();
+        })
+    })
+
+    it('should pass results', function (done) {
+        pf.chunk(2, [1, 2, 3], function (chunk, callback) {
+            callback(null, chunk.map(function (x) { return x * 2 }))
+        })(function (err, res) {
+            assert.deepEqual(res, [2, 4, 6])
+            done()
+        })
+    })
+})
+
+
+// Utilities
 
 function _time(func) {
     return function () {
