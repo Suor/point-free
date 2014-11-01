@@ -165,3 +165,9 @@ pf.chunk(1000, links, function (chunk, callback) {
     db.insert('link', chunk).run(callback);
 })(callback)
 ```
+
+
+TODO:
+
+- fill in docs
+- comparison with async.js
