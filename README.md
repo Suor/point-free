@@ -83,9 +83,9 @@ pf.serial(
 ```
 
 
-### serial(funcs...)
+### serial(funcs... | funcs)
 
-### parallel(funcs...)
+### parallel(funcs... | funcs)
 
 ### manual(states)
 

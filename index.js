@@ -1,5 +1,4 @@
 // Ideas:
-//  - support [arrays] and {objects} in serial() and parallel()
 //  - support <flow-func>(tasks, callback) syntax, aka async.compatible
 //  - select return value from serial(), parallel(), auto() like
 //      serial(...).select(1)    // second
@@ -196,8 +195,8 @@ pf.waterfall = function () {
     }
 }
 
-pf.serial = function () {
-    var tasks = [].slice.call(arguments);
+pf.serial = function (tasks) {
+    tasks = Array.isArray(tasks) ? tasks : [].slice.call(arguments);
 
     return function () {
         var args = [].slice.call(arguments);
@@ -223,8 +222,8 @@ pf.serial = function () {
     }
 }
 
-pf.parallel = function () {
-    var tasks = [].slice.call(arguments);
+pf.parallel = function (tasks) {
+    tasks = Array.isArray(tasks) ? tasks : [].slice.call(arguments);
 
     return function () {
         var args = [].slice.call(arguments);
