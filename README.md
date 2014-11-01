@@ -149,6 +149,10 @@ var delayedHandler = pf.waterfall(pf.sleep(1000), handler);
 
 ## Collections
 
+### each(seq, func)
+
+### map(seq, func)
+
 ### chunk(size, seq, func)
 
 ```js

@@ -402,6 +402,29 @@ describe('fallback', function () {
 })
 
 
+describe('map', function () {
+    it('should be parallel', function (done) {
+        var calls = [];
+
+        pf.map([[1, 20], [2, 10]], function (args, callback) {
+            setTimeout(function () {calls.push(args[0]); callback(null)}, args[1]);
+        })(function (err) {
+            assert.deepEqual(calls, [2, 1])
+            done()
+        })
+    })
+
+    it('should pass results', function (done) {
+        pf.map([1, 2], function (arg, callback) {
+            callback(null, arg * 2)
+        })(function (err, res) {
+            assert.deepEqual(res, [2, 4])
+            done()
+        })
+    })
+})
+
+
 function _time(func) {
     return function () {
         var args = [].slice.call(arguments);

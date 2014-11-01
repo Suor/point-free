@@ -343,8 +343,23 @@ pf.sleep = function (timeout) {
     }
 }
 
+pf.clear = function () {
+    var callback = arguments[arguments.length - 1];
+    callback(null);
+}
+
 
 // Collections
+
+pf.each = function (seq, func) {
+    return pf.waterfall(pf.map(seq, func), pf.clear);
+}
+
+pf.map = function (seq, func) {
+    return pf.parallel(seq.map(function (item) {
+        return func.bind(null, item);
+    }));
+}
 
 pf.chunk = function (size, data, func) {
     return function (callback) {
