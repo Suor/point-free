@@ -134,7 +134,7 @@ cachedGet('http://...')(function (err, body) {
 
 ### noop
 
-A nice thing when you can do something conditionally:
+A nice thing when you want to do something conditionally:
 
 ```js
 pf.waterfall(
