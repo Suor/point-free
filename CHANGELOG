@@ -1,3 +1,9 @@
+0.6.0
+- added while() and doWhile()
+- readded each() and map()
+- support passing array of tasks to serial/parallel
+- get rid of async.js dependency
+
 0.5.0
 - added logExits()
 - serial() and parallel() now pass their non-callback args to all subtasks
