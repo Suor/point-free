@@ -13,12 +13,66 @@ asynchronous primitives. It provides generally useful:
 npm install point-free
 ```
 
+## API
+
+### Decorators
+
+* [`retry`](#retry)
+* [`limit`](#limit)
+
 
 ## Decorators
 
+<a name="retry"></a>
 ### retry([options | attempts = 5], func)
 
+Makes a function retrying `func` up to `attempts` times, behaving the same otherwise.
+If amount of attempts as exceeded then last error is returned.
+
+**Options:**
+
+* `attempts` - number of attempts to run `func`, defaults to 5.
+* `timeout` or `timeout(failed)` - a number of milliseconds to wait between tries.
+  If specified as function then it is called with a number of failed attempts passed.
+* `factor` - timeout will be multiplied by this value for each failed attempt but first.
+  A shortcut to implement exponential backoff.
+
+This way one can make `fetchURL` use 5 attempts with timeouts 1, 2, 4, 8 and 16 seconds:
+
+```js
+var fetchURL = pf.retry({timeout: 1000, factor: 2}, _fetchURL);
+function _fetchURL(url, callback) {
+    // ...
+}
+```
+
+
+<a name="limit"></a>
 ### limit([options | limit], func)
+
+Limit number of concurrent executions of a `func`. Excessing calls will be queued and executed in FIFO order.
+
+**Options:**
+
+* `limit` - number of concurrent executions allowed.
+* `by` - limit only those calls clashing by values of `by(args..)`.
+
+Here is how you can limit HTTP requests to 4 by domain and 50 overall:
+
+```js
+var fetchURL = pf.limit({by: getDomain, limit: 4},
+               pf.limit(50, _fetchURL));
+function _fetchURL(url, callback) {
+    // ...
+}
+```
+
+By specifying limit to be 1 you can force calls to be sequential. E.g. in `map`:
+
+```js
+var mapSerial = pf.map(seq, pf.limit(1, process));
+```
+
 
 ### fallback(defaultValue, func)
 
