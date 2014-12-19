@@ -95,6 +95,12 @@ pf.limit = function (options, func) {
     limited.states = states;
     if (!options.by) limited.state = states.only = {running: 0, queue: []};
 
+    limited.emptyQueue = function () {
+        Object.keys(states).forEach(function (key) {
+            states[key].queue = [];
+        });
+    }
+
     return limited;
 }
 
