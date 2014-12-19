@@ -19,6 +19,10 @@ npm install point-free
 
 * [`retry`](#retry)
 * [`limit`](#limit)
+* [`fallback`](#fallback)
+* [`logCalls`](#logCalls)
+* [`logExits`](#logExits)
+* [`logErrors`](#logErrors)
 
 
 ## Decorators
@@ -74,21 +78,47 @@ var mapSerial = pf.map(seq, pf.limit(1, process));
 ```
 
 
+<a name="fallback"></a>
 ### fallback(defaultValue, func)
 
+Returns a version of `func` that never fails, but returns `defaultValue` instead.
+E.g. this function returns `'unknown'` if any of waterfall components fail:
+
+```js
+var detectPageLanguage = pf.fallback('unknown', pf.waterfall(
+    fetchPage,
+    getPageText,
+    detectTextLanguage
+));
+```
+
+
+<a name="logCalls"></a>
 ### logCalls([logger = console.log], func)
 
-On each function call pass its `arguments` to `logger`.
+On each function call pass its `arguments` to `logger`. Aimed to use for logging and debugging in a way like:
+
+```js
+var fetchURL = logCalls(fetchURL);
+// ... use fetchURL same as before, look at urls it's passed.
+```
 
 
+<a name="logExits"></a>
 ### logExits([logger = console.log], func)
 
-On each function callback call pass its `arguments` to `logger`.
+On each function callback call pass its `arguments` to `logger`. Useful to trace async function results.
 
 
 ### logErrors([logger = console.error], func)
 
-Pass all function errors to `logger`. They are still passed the normal way too.
+Pass all function errors to `logger`. They are still passed the normal way too. Can be used with a third party logger utility like [debug](https://www.npmjs.com/package/debug):
+
+```js
+var debug = require('debug')('my-module');
+var shakyFunc = logErrors(debug, shakyFunc);
+// ... use shaky func as usual while seeing its errors.
+```
 
 
 ## Combinators
