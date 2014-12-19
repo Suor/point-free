@@ -92,6 +92,7 @@ pf.limit = function (options, func) {
         state.queue.push(args);
         recheck();
     }
+    limited.wrapped = func;
     limited.states = states;
     if (!options.by) limited.state = states.only = {running: 0, queue: []};
 

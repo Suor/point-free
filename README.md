@@ -77,6 +77,8 @@ By specifying limit to be 1 you can force calls to be sequential. E.g. in `map`:
 var mapSerial = pf.map(seq, pf.limit(1, process));
 ```
 
+TODO: document introspection and .emptyQueue()
+
 
 <a name="fallback"></a>
 ### fallback(defaultValue, func)
