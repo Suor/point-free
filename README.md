@@ -76,6 +76,8 @@ npm install point-free
 
 ## Decorators
 
+Decorator wrap a function and either provide additional functionality or alter its semantics for particular case. Common usage: logging, retrying or limiting operations.
+
 <a name="retry"></a>
 ### retry([options | attempts = 5], func)
 
@@ -151,7 +153,7 @@ On each function call pass its `arguments` to `logger`. Aimed to use for logging
 
 ```js
 var fetchURL = logCalls(fetchURL);
-// ... use fetchURL same as before, look at urls it's passed.
+// ... use fetchURL same as before, look at urls passed.
 ```
 
 
@@ -223,15 +225,81 @@ pf.serial(
 <a name="serial"></a>
 ### serial(funcs... | funcs)
 
+Combines several actions into one executing them serially, arguments to combined action passed to
+each subtask:
+
+```js
+var dropShard = function (jobId, callback) {...};
+var deleteJob = function (jobId, callback) {...};
+var cleanup = pf.serial(dropShard, deleteJob);
+```
+
+Results of subtasks are combined into results array. Most commonly used to construct an operation from several async steps:
+
+```js
+pf.serial(
+    pg.query.bind(pg, 'drop database if exists pg_bricks', []),
+    pg.query.bind(pg, 'create database pg_bricks', []),
+    pg.query.bind(pg, 'create table ...', []),
+    ...
+)(function (err, res) {
+    done(err);
+})
+```
+
 <a name="parallel"></a>
 ### parallel(funcs... | funcs)
+
+Combines several actions into one executing them in parallel:
+
+```js
+var recalcAll = pf.parallel(recalcLinks, recalcDomains, recalcQueue);
+```
+
+Arguments are passed to each subtask, results are collected into array preserving order. Can be used to create a function as above or as a substep in bigger combinator:
+
+```js
+pf.waterfall(
+    // Fetch jobs and stats
+    pf.parallel(
+        db.select('*').from('job').rows,
+        db.query.bind(db, STATS_SQL)
+    ),
+    // Render the page
+    function (results, callback) {
+        var jobs = results[0], stats = results[1];
+        // ...
+    }
+)(next)
+```
 
 
 <a name="auto"></a>
 ### auto(jobs)
 
+Automatically resolves dependencies and executes subtasks in appropriate order and in parallel if possible. Results of dependent calls are passed as parameters to dependent actions.
+Here `jobs` and `stats` are executed in parallel, their results are passed to `report` function,
+then its result is passed to `send` function:
+
+```js
+pf.auto({
+    jobs: db.select('*').from('job').rows,
+    stats: db.query.bind(db, STATS_SQL),
+    report: ['jobs', 'stats', function (jobs, stats, callback) {
+        // ...
+        return html;
+    }],
+    send: ['report', function (report, callback) {...}]
+})(done)
+```
+
+All the subtask results are combined into an object with corresponding properties.
+
+
 <a name="manual"></a>
 ### manual(states)
+
+A way to create asynchronous state machine:
 
 ```js
 function cachedGet(url) {
