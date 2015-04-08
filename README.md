@@ -15,14 +15,63 @@ npm install point-free
 
 ## API
 
-### Decorators
+<table>
+<tr>
+    <th>Decorators</th>
+    <th>Combinators</th>
+    <th>Control Flow</th>
+    <th>Collections</th>
+    <th>Primitives</th>
+</tr>
 
-* [`retry`](#retry)
-* [`limit`](#limit)
-* [`fallback`](#fallback)
-* [`logCalls`](#logCalls)
-* [`logExits`](#logExits)
-* [`logErrors`](#logErrors)
+<tr>
+<td>
+    <ul>
+    <li><a href="#retry">retry</a></li>
+    <li><a href="#limit">limit</a></li>
+    <li><a href="#fallback">fallback</a></li>
+    <li><a href="#logCalls">logCalls</a></li>
+    <li><a href="#logExits">logExits</a></li>
+    <li><a href="#logErrors">logErrors</a></li>
+    </ul>
+</td>
+
+<td>
+    <ul>
+    <li><a href="#waterfall">waterfall</a></li>
+    <li><a href="#serial">serial</a></li>
+    <li><a href="#parallel">parallel</a></li>
+    <li><a href="#auto">auto</a></li>
+    <li><a href="#manual">manual</a></li>
+    </ul>
+</td>
+
+<td>
+    <ul>
+    <li><a href="#auto">auto</a></li>
+    <li><a href="#manual">manual</a></li>
+    <li><a href="#while">while</a></li>
+    <li><a href="#doWhile">doWhile</a></li>
+    </ul>
+</td>
+
+<td>
+    <ul>
+    <li><a href="#each">each</a></li>
+    <li><a href="#map">map</a></li>
+    <li><a href="#chunk">chunk</a></li>
+    </ul>
+</td>
+
+<td>
+    <ul>
+    <li><a href="#noop">noop</a></li>
+    <li><a href="#sleep">sleep</a></li>
+    </ul>
+</td>
+
+</tr></table>
+
 
 
 ## Decorators
@@ -112,6 +161,7 @@ var fetchURL = logCalls(fetchURL);
 On each function callback call pass its `arguments` to `logger`. Useful to trace async function results.
 
 
+<a name="logErrors"></a>
 ### logErrors([logger = console.error], func)
 
 Pass all function errors to `logger`. They are still passed the normal way too. Can be used with a third party logger utility like [debug](https://www.npmjs.com/package/debug):
@@ -125,6 +175,7 @@ var shakyFunc = logErrors(debug, shakyFunc);
 
 ## Combinators
 
+<a name="waterfall"></a>
 ### waterfall(funcs...)
 
 Combines several functions to be executed serially with results of each function
@@ -169,10 +220,17 @@ pf.serial(
 ```
 
 
+<a name="serial"></a>
 ### serial(funcs... | funcs)
 
+<a name="parallel"></a>
 ### parallel(funcs... | funcs)
 
+
+<a name="auto"></a>
+### auto(jobs)
+
+<a name="manual"></a>
 ### manual(states)
 
 ```js
@@ -209,15 +267,16 @@ cachedGet('http://...')(function (err, body) {
 })
 ```
 
-### auto(jobs)
-
+<a name="while"></a>
 ### while(test, body)
 
+<a name="doWhile"></a>
 ### doWhile(body, test)
 
 
 ## Primitives
 
+<a name="noop"></a>
 ### noop
 
 A nice thing when you want to do something conditionally:
@@ -230,6 +289,7 @@ pf.waterfall(
 ```
 
 
+<a name="sleep"></a>
 ### sleep(timeout)
 
 ```js
@@ -239,10 +299,13 @@ var delayedHandler = pf.waterfall(pf.sleep(1000), handler);
 
 ## Collections
 
+<a name="each"></a>
 ### each(seq, func)
 
+<a name="map"></a>
 ### map(seq, func)
 
+<a name="chunk"></a>
 ### chunk(size, seq, func)
 
 ```js
