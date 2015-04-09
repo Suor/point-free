@@ -44,15 +44,18 @@ npm install point-free
     <li><a href="#auto">auto</a></li>
     <li><a href="#manual">manual</a></li>
     </ul>
+    <br>
 </td>
 
 <td>
     <ul>
-    <li><a href="#auto">auto</a></li>
-    <li><a href="#manual">manual</a></li>
     <li><a href="#while">while</a></li>
     <li><a href="#doWhile">doWhile</a></li>
     </ul>
+    <br>
+    <br>
+    <br>
+    <br>
 </td>
 
 <td>
@@ -61,6 +64,9 @@ npm install point-free
     <li><a href="#map">map</a></li>
     <li><a href="#chunk">chunk</a></li>
     </ul>
+    <br>
+    <br>
+    <br>
 </td>
 
 <td>
@@ -68,6 +74,10 @@ npm install point-free
     <li><a href="#noop">noop</a></li>
     <li><a href="#sleep">sleep</a></li>
     </ul>
+    <br>
+    <br>
+    <br>
+    <br>
 </td>
 
 </tr></table>
