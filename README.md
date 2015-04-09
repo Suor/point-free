@@ -73,8 +73,8 @@ npm install point-free
     <ul>
     <li><a href="#noop">noop</a></li>
     <li><a href="#sleep">sleep</a></li>
+    <li><a href="#clear">clear</a></li>
     </ul>
-    <br>
     <br>
     <br>
     <br>
@@ -373,6 +373,9 @@ pf.waterfall(
 ```js
 var delayedHandler = pf.waterfall(pf.sleep(1000), handler);
 ```
+
+<a name="clear"></a>
+### clear
 
 
 ## Collections
