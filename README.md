@@ -235,16 +235,18 @@ pf.serial(
 <a name="serial"></a>
 ### serial(funcs... | funcs)
 
-Combines several actions into one executing them serially, arguments to combined action passed to
-each subtask:
+Combines several actions into one executing them serially, arguments to combined action
+passed to each subtask. Results of subtasks are combined into array preserving order.
+If an error occurs it's passed out immediately, stopping chain of execution.
 
 ```js
+// Note same arguments
 var dropShard = function (jobId, callback) {...};
 var deleteJob = function (jobId, callback) {...};
 var cleanup = pf.serial(dropShard, deleteJob);
 ```
 
-Results of subtasks are combined into results array. Most commonly used to construct an operation from several async steps:
+Most commonly used to construct an operation from several async steps:
 
 ```js
 pf.serial(
@@ -260,13 +262,16 @@ pf.serial(
 <a name="parallel"></a>
 ### parallel(funcs... | funcs)
 
-Combines several actions into one executing them in parallel:
+Combines several actions into one executing them in parallel.
+Arguments are passed to each subtask, results are collected into array preserving order.
+Any error is passed out immediately, all functions still running parallel continue,
+but their results are ignored.
 
 ```js
 var recalcAll = pf.parallel(recalcLinks, recalcDomains, recalcQueue);
 ```
 
-Arguments are passed to each subtask, results are collected into array preserving order. Can be used to create a function as above or as a substep in bigger combinator:
+Can be used to create a function as above or as a substep in a bigger combinator:
 
 ```js
 pf.waterfall(
@@ -287,7 +292,10 @@ pf.waterfall(
 <a name="auto"></a>
 ### auto(jobs)
 
-Automatically resolves dependencies and executes subtasks in appropriate order and in parallel if possible. Results of dependent calls are passed as parameters to dependent actions.
+Automatically resolves dependencies and executes subtasks in appropriate order and in parallel
+if possible. Results of dependent calls are passed as parameters to dependent actions.
+In the end all the subtask results are combined into an object with corresponding properties.
+
 Here `jobs` and `stats` are executed in parallel, their results are passed to `report` function,
 then its result is passed to `send` function:
 
@@ -303,13 +311,14 @@ pf.auto({
 })(done)
 ```
 
-All the subtask results are combined into an object with corresponding properties.
-
 
 <a name="manual"></a>
 ### manual(states)
 
-A way to create asynchronous state machine:
+A way to create asynchronous state machine. Accepts an object with steps, call `next.name()` or
+use it as callback to progress to next step.
+`start` and `end` steps are special: execution always starts from `start` and
+calling `next.end()` will stop machine and pass a result out:
 
 ```js
 function cachedGet(url) {
@@ -393,7 +402,7 @@ var delayedHandler = pf.waterfall(pf.sleep(1000), handler);
 // Insert links into database in chunks of 1000
 pf.chunk(1000, links, function (chunk, callback) {
     db.insert('link', chunk).run(callback);
-})(callback)
+})(done)
 ```
 
 
