@@ -79,9 +79,8 @@ npm install point-free
     <br>
     <br>
 </td>
-
-</tr></table>
-
+</tr>
+</table>
 
 
 ## Decorators
@@ -357,8 +356,33 @@ cachedGet('http://...')(function (err, body) {
 <a name="while"></a>
 ### while(test, body)
 
+Creates an asynchronous function repeatively calling `body` while `test` condition holds:
+
+
+```js
+var waitForLock = pf.while(isLocked, function (callback) {
+    setTimeout(callback, 1000);
+});
+
+pf.serial(
+    waitForLock,
+    ... // do something useful
+)
+```
+
 <a name="doWhile"></a>
 ### doWhile(body, test)
+
+Same as [while](#while), but `test` condition is checked after `body` execution:
+
+```js
+var bytesReceived = 0;
+var readChunk = pf.doWhile(function (callback) {
+    // ...
+    bytesReceived += ...
+    // ...
+}, function () {return bytesReceived <= CHUNK_SIZE});
+```
 
 
 ## Primitives
