@@ -1,6 +1,6 @@
 {
   "name": "point-free",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Async combinators and decorators collection",
   "keywords": [
     "point-free", "async", "higher-order", "combinator", "decorator", "flow"

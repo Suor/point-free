@@ -1,3 +1,10 @@
+0.7.0
+- documented everything
+- simplified subtask result handling in chunks()
+- exposed clear
+- added a way to access function wrapped by .limit()
+- added a way to empty .limit() queue
+
 0.6.0
 - added while() and doWhile()
 - readded each() and map()
