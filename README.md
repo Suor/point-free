@@ -394,7 +394,7 @@ A nice thing when you want to do something conditionally:
 
 ```js
 pf.waterfall(
-    jobs[id] ? pf.noop : pf.loadJob,
+    jobs[id] ? pf.noop : loadJob,
     // ...
 )
 ```
@@ -403,12 +403,28 @@ pf.waterfall(
 <a name="sleep"></a>
 ### sleep(timeout)
 
+Delays any subsequent actions in a pipeline.
+Could be used with [serial](#serial) and [waterfall](#waterfall):
+
 ```js
 var delayedHandler = pf.waterfall(pf.sleep(1000), handler);
 ```
 
 <a name="clear"></a>
 ### clear
+
+Ignores it's arguments and just calls a callback.
+Intended to be used in [waterfall](#waterfall) pipeline to ignore all results from previous function:
+
+```js
+var acquireTask = pf.waterfall(
+    db.query('select pg_advisory_xact_lock($1, $2)', [job_id, module]),
+    // ignore select result
+    pf.clear,
+    // mark task as worked on
+    db.update('queue', {active: true}).where(...).returning('*')
+)
+```
 
 
 ## Collections
