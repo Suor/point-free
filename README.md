@@ -131,10 +131,12 @@ function _fetchURL(url, callback) {
 }
 ```
 
-By specifying limit to be 1 you can force calls to be sequential. E.g. in `map`:
+By specifying limit to be 1 you can force calls to be sequential. E.g. in [map](#map):
 
 ```js
-var mapSerial = pf.map(seq, pf.limit(1, process));
+var mapSerial = function (seq, process) {
+    return pf.map(seq, pf.limit(1, process));
+}
 ```
 
 TODO: document introspection and .emptyQueue()
@@ -432,11 +434,32 @@ var acquireTask = pf.waterfall(
 <a name="each"></a>
 ### each(seq, func)
 
+Execute `func` for each item in `seq` in parallel and ignore results.
+If any sub-call fails then entire call fails immediately.
+
+```js
+var pingHosts = pf.each(HOSTS, ping);
+```
+
 <a name="map"></a>
 ### map(seq, func)
 
+Execute `func` for each item in `seq` in parallel and collect results into array preserving order.
+If any sub-call fails then entire call fails immediately.
+
+```js
+pf.map(seq, function (item, callback) {
+    // ...
+})(done)
+```
+
 <a name="chunk"></a>
 ### chunk(size, seq, func)
+
+Chunk `seq` and process each chunk with `func` serially.
+Chunks will be sized up to `size`.
+Any arrays returned by processing function are combined into single resulting array,
+non-array results are ignored.
 
 ```js
 // Insert links into database in chunks of 1000
@@ -444,9 +467,3 @@ pf.chunk(1000, links, function (chunk, callback) {
     db.insert('link', chunk).run(callback);
 })(done)
 ```
-
-
-TODO:
-
-- fill in docs
-- comparison with async.js
