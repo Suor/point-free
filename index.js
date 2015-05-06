@@ -400,10 +400,7 @@ pf.chunk = function (size, data, func) {
                     func(chunk, function (err, res) {
                         if (err) return callback(err);
                         done += chunk.length;
-                        if (results && Array.isArray(res) && res.length == chunk.length)
-                            results = results.concat(res);
-                        else
-                            results = null;
+                        if (Array.isArray(res)) results = results.concat(res);
                         callback()
                     })
                 }
