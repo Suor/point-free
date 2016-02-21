@@ -394,7 +394,7 @@ A nice thing when you want to do something conditionally:
 
 ```js
 pf.waterfall(
-    jobs[id] ? pf.noop : loadJob,
+    jobs[id] ? loadJob : pf.noop,
     // ...
 )
 ```
