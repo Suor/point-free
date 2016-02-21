@@ -358,13 +358,11 @@ cachedGet('http://...')(function (err, body) {
 <a name="while"></a>
 ### while(test, body)
 
-Creates an asynchronous function repeatively calling `body` while `test` condition holds:
+Creates an asynchronous function repeatively calling async `body` while sync `test` condition holds:
 
 
 ```js
-var waitForLock = pf.while(isLocked, function (callback) {
-    setTimeout(callback, 1000);
-});
+var waitForLock = pf.while(isLocked, pf.sleep(1000));
 
 pf.serial(
     waitForLock,
